@@ -8,6 +8,7 @@ A doc is created when its first real content exists, not as an empty stub. Every
 |---|---|---|
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | One-page summary of scope, architecture and milestones | Done (M0) |
 | [adr/](adr/) | Architecture Decision Records | Started (M0) |
+| [milestones/](milestones/) | Approved step checklist per milestone, written at kickoff | Started ([M1](milestones/M1.md)) |
 | [learning-journal/](learning-journal/) | One entry per milestone: what changed, why, what was learned | Started ([M0](learning-journal/M0.md)) |
 | STACK.md | Exact verified and pinned versions | Expected in M1 |
 | ARCHITECTURE.md | Modules, ports and adapters, process view | Expected in M1 |
@@ -21,6 +22,8 @@ A doc is created when its first real content exists, not as an empty stub. Every
 "Expected" milestones are a guide; the real trigger is the first change that needs the doc.
 
 ## ADRs
+
+ADRs are numbered in the order they are written, with no gaps. Planned ADRs are referenced by title, not number; the numbers in the build plan's Appendix B are indicative only.
 
 | # | Title | Status |
 |---|---|---|
