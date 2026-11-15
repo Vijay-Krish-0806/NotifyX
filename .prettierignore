@@ -1,0 +1,8 @@
+# Generated
+pnpm-lock.yaml
+**/dist/
+**/.next/
+**/coverage/
+
+# Hand-written docs: keep their formatting as written
+*.md
