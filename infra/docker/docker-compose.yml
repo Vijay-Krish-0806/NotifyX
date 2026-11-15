@@ -1,0 +1,126 @@
+# NotifyX local infrastructure. Apps run on the host; these services run in Docker.
+# Start: pnpm infra:up   Stop: pnpm infra:down   Status: pnpm infra:ps
+# Every host port is bound to 127.0.0.1 only, so nothing is reachable from the network.
+# Credentials here are local-only development defaults; override them in the root .env.
+# Image tags are pinned; see docs/STACK.md.
+
+name: notifyx
+
+services:
+  postgres:
+    image: postgres:18.7-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-notifyx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-notifyx}
+      POSTGRES_DB: ${POSTGRES_DB:-notifyx}
+    ports:
+      # 5433 on the host: 5432 is often taken by a locally installed PostgreSQL.
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432'
+    volumes:
+      # PostgreSQL 18+ images: mount /var/lib/postgresql (PGDATA is /var/lib/postgresql/18/docker).
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      # $$ passes a literal $ so the container's own env vars are used.
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:8.10.3-alpine
+    ports:
+      - '127.0.0.1:${REDIS_HOST_PORT:-6379}:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli ping | grep -q PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:4.4.0
+    hostname: kafka
+    ports:
+      - '127.0.0.1:${KAFKA_HOST_PORT:-9092}:9092'
+    environment:
+      # Single node in KRaft mode: one process is both broker and controller (no ZooKeeper).
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      CLUSTER_ID: 'leaWEc5zRDa4cIUpC2aCzg'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      # Three listeners (sockets the broker opens inside the container):
+      #   DOCKER     :19092  for other containers (Kafka UI) and broker-internal traffic
+      #   HOST       :9092   for apps running on the host, via the published port
+      #   CONTROLLER :29093  KRaft controller traffic only
+      KAFKA_LISTENERS: 'DOCKER://:19092,HOST://:9092,CONTROLLER://:29093'
+      # The address each client is told to connect back to, per listener.
+      # HOST uses 127.0.0.1, not localhost: on Windows localhost resolves to ::1 (IPv6) first,
+      # but the port is published on IPv4 loopback only, and librdkafka then fails to connect.
+      KAFKA_ADVERTISED_LISTENERS: 'DOCKER://kafka:19092,HOST://127.0.0.1:${KAFKA_HOST_PORT:-9092}'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'DOCKER'
+      # One broker, so internal topics cannot have more than one replica.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # /var/lib/kafka/data exists in the image and is owned by the non-root Kafka user,
+      # so a new named volume mounted there stays writable (the image default under /tmp does not).
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+    volumes:
+      - kafkadata:/var/lib/kafka/data
+    healthcheck:
+      # Checks the DOCKER listener, the same path Kafka UI uses.
+      test:
+        [
+          'CMD-SHELL',
+          '/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server kafka:19092 > /dev/null 2>&1',
+        ]
+      interval: 10s
+      timeout: 15s
+      retries: 10
+      start_period: 30s
+
+  kafka-ui:
+    image: ghcr.io/kafbat/kafka-ui:v1.5.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - '127.0.0.1:${KAFKA_UI_HOST_PORT:-8080}:8080'
+    environment:
+      KAFKA_CLUSTERS_0_NAME: notifyx-local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:19092'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://localhost:8080/actuator/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  mailpit:
+    image: axllent/mailpit:v1.33.1
+    ports:
+      - '127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}:1025'
+      - '127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}:8025'
+    environment:
+      # Keep captured mail across restarts (default is a temp file deleted on exit).
+      MP_DATABASE: /data/mailpit.db
+    volumes:
+      - mailpitdata:/data
+    healthcheck:
+      test: ['CMD', '/mailpit', 'readyz']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:
+  kafkadata:
+  mailpitdata:

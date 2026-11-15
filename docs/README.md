@@ -11,7 +11,7 @@ A doc is created when its first real content exists, not as an empty stub. Every
 | [milestones/](milestones/) | Approved step checklist per milestone, written at kickoff | Started ([M1](milestones/M1.md)) |
 | [learning-journal/](learning-journal/) | One entry per milestone: what changed, why, what was learned | Started ([M0](learning-journal/M0.md)) |
 | [STACK.md](STACK.md) | Exact verified and pinned versions | Started (M1) |
-| ARCHITECTURE.md | Modules, ports and adapters, process view | Expected in M1 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Modules, ports and adapters, process view, configuration | Started (M1) |
 | API.md | Endpoints, error format, auth, pagination | Expected in M1 (health endpoints) |
 | FAILURE_MODES.md | What breaks, how the system reacts, how it is tested | Expected in M1 (readiness), grows in M7 |
 | DATABASE.md | Tables, indexes, constraints, migrations | Expected in M2 |

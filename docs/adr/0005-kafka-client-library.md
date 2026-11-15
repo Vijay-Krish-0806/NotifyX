@@ -50,6 +50,27 @@ The system uses `@confluentinc/kafka-javascript` through its KafkaJS-compatible 
 - If either install fails, stop and revisit this decision with a new ADR.
 - M6: verify the consumer API for manual offset commit and headers before building on it.
 
+## Verification (spike, 2026-11-15)
+
+A throwaway spike, outside the repo and since deleted, installed `@confluentinc/kafka-javascript@1.11.0` with pnpm 12.21.0 and connected to the local broker. Results:
+
+- **pnpm blocks the native build by default.** Without permission, `pnpm add` fails with `ERR_PNPM_IGNORED_BUILDS` (exit 1). The package's install script (`node-pre-gyp install --fallback-to-build`) never runs, so `require` fails with "Could not locate the bindings file".
+- **Fix: allow only this package.** Add `allowBuilds: { '@confluentinc/kafka-javascript': true }` in `pnpm-workspace.yaml` (pnpm.io/settings). Do not use `dangerouslyAllowAllBuilds`. Other packages' build scripts stay blocked.
+- **The install needs access to github.com.** The install script downloads the prebuilt binary from the project's GitHub releases. Nothing was compiled. CI and any fresh install need network access to github.com.
+- **Windows x64 (host, Node 24.10.0):** downloaded `node-v137-win32-unknown-x64`; `require` loads librdkafka 2.16.0.
+- **Linux x64 (`node:24.22.3-bookworm-slim`, glibc 2.36):** downloaded `node-v137-linux-glibc-x64` in 2.9 s; `require` loads librdkafka 2.16.0. Each step was run as a separate command in the container (not an attached interactive terminal).
+- **Connections:**
+  - From the host to `127.0.0.1:9092` (the HOST listener): an admin `listTopics` succeeded 5 out of 5 times, in 169-194 ms.
+  - From a container on the compose network to `kafka:19092` (the DOCKER listener): succeeded in 158 ms.
+- **`localhost` is unreliable on Windows.**
+  - `localhost` resolves to `::1` first, but Docker publishes the port on `127.0.0.1` only.
+  - With the broker advertising `localhost`, the client failed. After switching the advertised address to `127.0.0.1`, bootstrapping via `localhost` still succeeded only 3 out of 5 times: two runs took about 2.3 s, and two failed with "Broker transport failure".
+  - Decision: the HOST listener advertises `127.0.0.1`, and every host URL uses `127.0.0.1` (see ARCHITECTURE.md).
+- **Not fully understood:** while the broker still advertised `localhost`, bootstrapping via `127.0.0.1` succeeded even though the follow-up connection should have used `localhost`. We don't know librdkafka's exact address-selection and fallback behavior. The design does not rely on it.
+- **License: MIT.** Checked 2026-11-15 in the npm metadata for 1.11.0, `LICENSE.txt` at tag `v1.11.0`, and GitHub's license detection. The bundled librdkafka and its dependencies carry their own licenses, which were not reviewed here.
+
+This verification does not change the decision.
+
 ## References
 
 - https://github.com/confluentinc/confluent-kafka-javascript (README, INTRODUCTION.md)

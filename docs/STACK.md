@@ -10,6 +10,18 @@ Every dependency is pinned to an exact version. A row is added in the same chang
 | pnpm | 12.21.0 (`packageManager`) | 2026-11-15, npm latest; pnpm.io/settings | pnpm reads only auth/registry/proxy/TLS settings from `.npmrc`; all other settings go in `pnpm-workspace.yaml`. Native build scripts must be allowed with `allowBuilds` (relevant for the Kafka client in step 6/7). |
 | Docker / Compose | 29.6.2 / v5.3.1 | 2026-11-15, local `docker --version` | Local only; images are pinned in the compose file (M1 step 3). |
 
+## Infrastructure images (infra/docker/docker-compose.yml)
+
+Tags were checked on 2026-11-15 against the Docker Hub tag lists. The healthcheck tools were confirmed by running them inside each image.
+
+| Image | Tag | Notes |
+|---|---|---|
+| postgres | `18.7-alpine` | 18+ images: the volume is mounted at `/var/lib/postgresql` (PGDATA is `/var/lib/postgresql/18/docker`, from the Docker Hub page). Healthcheck: `pg_isready`. |
+| redis | `8.10.3-alpine` | The current stable 8.x (`latest` maps to 8.10.3). Redis 8 is offered under RSALv2, SSPLv1 or AGPLv3; local development use only. Healthcheck: `redis-cli ping`. |
+| apache/kafka | `4.4.0` | Official Apache image, KRaft mode. Runs as non-root `appuser`, so data goes in `/var/lib/kafka/data`: the image default `/tmp/kraft-combined-logs` is not writable on a fresh named volume (tested). Healthcheck: `kafka-broker-api-versions.sh`. |
+| ghcr.io/kafbat/kafka-ui | `v1.5.0` | Maintained fork of the original kafka-ui (provectus, last release v0.7.2 in 2024-04). Healthcheck: `/actuator/health`. |
+| axllent/mailpit | `v1.33.1` | Healthcheck: `/mailpit readyz` (a subcommand built into the binary). |
+
 ## Root dev dependencies
 
 | Package | Version | Verified | Notes |
