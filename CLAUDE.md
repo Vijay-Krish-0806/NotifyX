@@ -10,7 +10,8 @@ Built mainly to learn production-grade system design. Claude Code writes the cod
 
 ## Current milestone
 
-M0 (workflow + docs skeleton). Done when a fresh session, given only this repo, can state the hard rules, non-goals and current milestone correctly.
+M1 (foundation + infra). Not started; begin with a design-first kickoff. Done when one command brings up the infra, all three apps run, /health/ready reflects real dependency state (stop Redis and it reports unhealthy), and CI is green.
+M0 is done (tag m0-workflow).
 Update this section when a milestone is finished.
 
 ## Non-goals (only with an approved ADR)
