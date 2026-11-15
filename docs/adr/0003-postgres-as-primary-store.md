@@ -56,7 +56,7 @@ Every schema change is a migration (Prisma Migrate), with raw SQL where Prisma l
 **Follow-ups**
 
 - M2: schema, migrations and indexes that lead with `organization_id`.
-- M6: ADR-0009 (outbox relay design). M10: ADR-0015 (partitioning strategy).
+- M6: the planned outbox relay design ADR. M10: the planned table partitioning strategy ADR.
 
 ## References
 

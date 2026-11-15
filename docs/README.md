@@ -32,3 +32,7 @@ ADRs are numbered in the order they are written, with no gaps. Planned ADRs are 
 | [0002](adr/0002-gateway-as-module.md) | Gateway as a module, not a separate service | Accepted |
 | [0003](adr/0003-postgres-as-primary-store.md) | PostgreSQL as the primary store | Accepted |
 | [0004](adr/0004-modular-monolith-plus-worker.md) | Modular monolith plus a worker process | Accepted |
+| [0005](adr/0005-kafka-client-library.md) | Kafka client library | Accepted |
+| [0006](adr/0006-validation-library.md) | Validation library | Accepted |
+| [0007](adr/0007-redis-client-library.md) | Redis client library | Accepted |
+| [0008](adr/0008-health-check-design.md) | Health check design | Accepted |

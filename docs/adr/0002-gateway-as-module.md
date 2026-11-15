@@ -47,7 +47,7 @@ The gateway is a NestJS module inside `apps/api`. It is built from the framework
 **Follow-ups**
 
 - M3: design the tenant context (request-scoped provider or AsyncLocalStorage) and add explicit tenant-isolation tests.
-- M5: ADR-0007 (rate-limit algorithm) and ADR-0008 (fail-open vs fail-closed).
+- M5: the planned rate-limit algorithm ADR and the planned fail-open vs fail-closed ADR.
 
 ## References
 

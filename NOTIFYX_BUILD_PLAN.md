@@ -547,4 +547,6 @@ Interview stories this project gives you: the dual-write problem and outbox; at-
 
 ## Appendix B: ADRs to write (minimum)
 
+> Numbers below are indicative only. Actual ADRs are numbered in the order they are written, with no gaps; see the ADR table in `docs/README.md` for the real numbers. Refer to planned ADRs by title, not number.
+
 0001 monorepo layout · 0002 gateway as module · 0003 Postgres primary · 0004 modular monolith + worker · 0005 Kafka client library · 0006 validation library · 0007 rate-limit algorithm · 0008 fail-open vs fail-closed · 0009 outbox relay design · 0010 partition key · 0011 retry mechanism · 0012 scheduler design · 0013 digest storage · 0014 real-time transports · 0015 table partitioning strategy · (stretch) 0016 sharding experiment · 0017 MCP.
