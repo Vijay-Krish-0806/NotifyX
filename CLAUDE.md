@@ -31,7 +31,8 @@ Kubernetes, service mesh, many microservices, custom database, event sourcing, s
 ## Git
 
 - Commit at the end of each approved step, with a conventional commit message (feat:, fix:, docs:, chore:, test:, refactor:).
-- Never push, amend, rebase, force-push or rewrite history without asking.
+- Pushing to origin after a commit is allowed.
+- Never force-push, amend, rebase or rewrite history without asking.
 - Never commit .env files, keys or secrets.
 
 ## Hard rules
