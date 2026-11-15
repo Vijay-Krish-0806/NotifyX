@@ -25,3 +25,7 @@ A doc is created when its first real content exists, not as an empty stub. Every
 | # | Title | Status |
 |---|---|---|
 | [0000](adr/0000-template.md) | Template | n/a |
+| [0001](adr/0001-monorepo-layout.md) | Monorepo layout with pnpm workspaces | Accepted |
+| [0002](adr/0002-gateway-as-module.md) | Gateway as a module, not a separate service | Accepted |
+| [0003](adr/0003-postgres-as-primary-store.md) | PostgreSQL as the primary store | Accepted |
+| [0004](adr/0004-modular-monolith-plus-worker.md) | Modular monolith plus a worker process | Accepted |
