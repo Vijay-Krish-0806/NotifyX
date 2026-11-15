@@ -5,7 +5,7 @@ Built mainly to learn production-grade system design. Claude Code writes the cod
 
 ## Read first
 
-- docs/PROJECT_CONTEXT.md: one-page summary of scope, architecture and rules. Read it at the start of every session. (Being created in M0.)
+- docs/PROJECT_CONTEXT.md: one-page summary of scope, architecture and rules. Read it at the start of every session.
 - NOTIFYX_BUILD_PLAN.md: the full source of truth. Read the current milestone before any change. Read Sections 1-7 in full at milestone kickoff.
 
 ## Current milestone
@@ -53,7 +53,7 @@ Kubernetes, service mesh, many microservices, custom database, event sourcing, s
 
 ## Docs
 
-docs/README.md is the index (being created in M0). Planned docs: PROJECT_CONTEXT, STACK, ARCHITECTURE, DATABASE, API, KAFKA, REDIS, SECURITY, FAILURE_MODES, adr/, learning-journal/.
+docs/README.md is the index. Planned docs: PROJECT_CONTEXT, STACK, ARCHITECTURE, DATABASE, API, KAFKA, REDIS, SECURITY, FAILURE_MODES, adr/, learning-journal/.
 Each doc is created when its first real content exists, not as an empty stub.
 
 ## Milestone loop
